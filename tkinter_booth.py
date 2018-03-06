@@ -166,7 +166,7 @@ master.wm_attributes('-fullscreen', 'true')
 images = []
 for number in range(1,9): 
   print number
-  image = Image.open('/home/pi/Desktop/countdown/' + str(number) + '.png')
+  image = Image.open('countdown/' + str(number) + '.png')
   photo = ImageTk.PhotoImage(image)
   label = Label(image=photo)
   label.image = photo # keep a reference!
@@ -218,7 +218,7 @@ def Interrupt_event(pin):
             camera.capture('/home/pi/Desktop/photobooth_images/image'+ str(image_number) + '.jpg' )
         images[0].pack_forget()
 	images[5].pack()
-        subprocess.call("sudo /home/pi/Desktop/assemble_and_print", shell=True)
+        subprocess.call("sudo assemble_and_print", shell=True)
         #os.system("rm /home/pi/Desktop/temp*")
         images[5].pack_forget()
         display_images()
