@@ -1,0 +1,19 @@
+#!/bin/bash
+#mogrify -chop 80x0+0+0 -gravity West /home/pi/Desktop/photobooth_images/*.jpg
+#mogrify -chop 80x0+0+0 -gravity East /home/pi/Desktop/photobooth_images/*.jpg
+
+montage /home/pi/Desktop/photobooth_images/*.jpg /home/pi/Desktop/banner_single.png -tile 4x1 -geometry +20+0 /home/pi/Desktop/temp_montage2.jpg
+convert /home/pi/Desktop/temp_montage2.jpg -shave 20x0 /home/pi/Desktop/temp_montage3.jpg
+montage /home/pi/Desktop/temp_montage3.jpg /home/pi/Desktop/strich.png /home/pi/Desktop/temp_montage3.jpg -tile 1x3 -geometry +0+20 /home/pi/Desktop/temp_montage4.jpg 
+convert /home/pi/Desktop/temp_montage4.jpg -shave 0x8 /home/pi/Desktop/temp_montage5.jpg
+convert /home/pi/Desktop/temp_montage5.jpg  -gravity North -chop 0x10 /home/pi/Desktop/temp_montage6.jpg
+#convert /home/pi/Desktop/temp_montage6.jpg -shave 5x0  /home/pi/Desktop/temp_montage7.jpg
+
+lp -d Canon_CP1000 /home/pi/Desktop/temp_montage6.jpg
+suffix=$(date +%H%M%S)
+cp /home/pi/Desktop/temp_montage6.jpg /home/pi/Desktop/PB_archive/PB_${suffix}.jpg
+
+mogrify -rotate 90 /home/pi/Desktop/photobooth_images/image1.jpg
+mogrify -rotate 90 /home/pi/Desktop/photobooth_images/image2.jpg
+mogrify -rotate 90 /home/pi/Desktop/photobooth_images/image3.jpg
+#rm /home/pi/Desktop/photobooth_images/*.jpg
