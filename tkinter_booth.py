@@ -71,7 +71,7 @@ def count_down(pins):
 
 def display_images():
   for image_number in range(1, 4): 
-    image = Image.open('/home/pi/Desktop/photobooth_images/image'+ str(image_number) + '.jpg' )
+    image = Image.open('photobooth_images/image'+ str(image_number) + '.jpg' )
     photo = ImageTk.PhotoImage(image)
     label = Label(image=photo)
     label.image = photo # keep a reference!
@@ -215,10 +215,10 @@ def Interrupt_event(pin):
 	    led_high(pins)
             sleep(1)
             count_down(pins)
-            camera.capture('/home/pi/Desktop/photobooth_images/image'+ str(image_number) + '.jpg' )
+            camera.capture('photobooth_images/image'+ str(image_number) + '.jpg' )
         images[0].pack_forget()
 	images[5].pack()
-        subprocess.call("sudo assemble_and_print", shell=True)
+        subprocess.call("sudo ./assemble_and_print", shell=True)
         #os.system("rm /home/pi/Desktop/temp*")
         images[5].pack_forget()
         display_images()
