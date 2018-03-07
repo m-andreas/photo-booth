@@ -1,19 +1,20 @@
 #!/bin/bash
 #mogrify -chop 80x0+0+0 -gravity West photobooth_images/*.jpg
 #mogrify -chop 80x0+0+0 -gravity East photobooth_images/*.jpg
-
-montage photobooth_images/image*.jpg layouts/banner_single.png -tile 4x1 -geometry +20+0 photobooth_images/temp_montage2.jpg
-convert photobooth_images/temp_montage2.jpg -shave 20x0 photobooth_images/temp_montage3.jpg
-montage photobooth_images/temp_montage3.jpg layouts/line.png photobooth_images/temp_montage3.jpg -tile 1x3 -geometry +0+20 photobooth_images/temp_montage4.jpg 
-convert photobooth_images/temp_montage4.jpg -shave 0x8 photobooth_images/temp_montage5.jpg
-convert photobooth_images/temp_montage5.jpg  -gravity North -chop 0x10 photobooth_images/temp_montage6.jpg
+montage photobooth_images/image*.jpg -tile 3x1 -geometry +50+40 -background White photobooth_images/temp_montage2.jpg
+montage layouts/banner_gd.png -tile 1x1 -geometry +0+90 -background White layouts/banner_new.jpg
+montage photobooth_images/temp_montage2.jpg layouts/banner_new.jpg -tile 2x1 -geometry +0+0 -background White photobooth_images/temp_montage3.jpg
+#convert photobooth_images/temp_montage2.jpg -shave 40x0 photobooth_images/temp_montage4.jpg
+montage photobooth_images/temp_montage3.jpg layouts/line.png photobooth_images/temp_montage3.jpg -tile 1x3 -geometry +0+20 -background White -border 0 photobooth_images/temp_montage4.jpg 
+#convert photobooth_images/temp_montage4.jpg -shave 0x8 photobooth_images/temp_montage5.jpg
+#convert photobooth_images/temp_montage5.jpg  -gravity North -chop 0x10 photobooth_images/temp_montage6.jpg
 #convert temp_montage6.jpg -shave 5x0  temp_montage7.jpg
 
-#lp -d Canon_CP1000 photobooth_images/temp_montage6.jpg
+#lp -d Canon_CP1000 photobooth_images/temp_montage4.jpg
 suffix=$(date +%H%M%S)
-cp photobooth_images/temp_montage6.jpg archive/PB_${suffix}.jpg
+cp photobooth_images/temp_montage4.jpg archive/PB_${suffix}.jpg
 
-mogrify -rotate 90 photobooth_images/image1.jpg
-mogrify -rotate 90 photobooth_images/image2.jpg
-mogrify -rotate 90 photobooth_images/image3.jpg
+#mogrify -rotate 90 photobooth_images/image1.jpg
+#mogrify -rotate 90 photobooth_images/image2.jpg
+#mogrify -rotate 90 photobooth_images/image3.jpg
 #rm /home/pi/Desktop/photobooth_images/*.jpg

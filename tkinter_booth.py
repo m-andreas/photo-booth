@@ -14,11 +14,11 @@ def camera_setup():
     global camera
     camera = picamera.PiCamera(resolution = (480, 525), framerate= 30 )
     camera.rotation = 90
-    camera.brightness = 55
+    camera.brightness = 35
     camera.shutter_speed = 7000
     camera.iso = 800
-    camera.saturation = 30
-    #camera.image_effect="washedout"
+    camera.saturation = 60
+    camera.image_effect="washedout"
 
 def printer_setup():
     global conn
@@ -84,7 +84,7 @@ def start_process():
     global images;
     camera.stop_preview()
     camera.rotation = 0
-    camera.resolution = (480, 525)
+    camera.resolution = (900, 1100)
     sleep(2)
     camera.shutter_speed = camera.exposure_speed
     camera.exposure_mode = 'off'
