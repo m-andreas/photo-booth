@@ -14,9 +14,9 @@ def camera_setup():
     global camera
     camera = picamera.PiCamera(resolution = (480, 525), framerate= 30 )
     camera.rotation = 90
-    camera.brightness = 35
+    camera.brightness = 48
     camera.shutter_speed = 7000
-    camera.iso = 800
+    camera.iso = 500
     camera.saturation = 60
     camera.image_effect="washedout"
 
