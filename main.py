@@ -20,7 +20,7 @@ class Booth
         led_low()
 
     def camera_setup(self):
-        self.camera = picamera.PiCamera(resolution = (480, 525), framerate= 30 )
+        self.camera = picamera.PiCamera(resolution = (900, 1100), framerate= 30 )
         self.camera.rotation = 90
         self.camera.brightness = 55
         self.camera.shutter_speed = 7000
@@ -101,7 +101,7 @@ class Booth
     def start_process():
         self.camera.stop_preview()
         self.camera.rotation = 0
-        self.camera.resolution = (480, 525)
+        self.camera.resolution = (900, 1100)
         sleep(2)
         self.camera.shutter_speed = camera.exposure_speed
         self.camera.exposure_mode = 'off'
