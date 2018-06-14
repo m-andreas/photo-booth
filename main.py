@@ -168,8 +168,8 @@ def interrupt_event(pin):
 
             booth.images[0].pack_forget()
             booth.images[5].pack()
-            subprocess.call("sudo ./turn_images", shell=True)
             subprocess.call("sudo ./assemble_and_print&", shell=True)
+            subprocess.call("sudo ./turn_images", shell=True)
             booth.display_images()
             booth.paper_left -= 1
             if booth.paper_left == 0:
@@ -191,7 +191,7 @@ master.bind("<Return>", lambda e: (
   master.destroy()))
 
 GPIO.add_event_detect(37, GPIO.FALLING, callback=interrupt_event)
-GPIO.add_event_detect(29, GPIO.FALLING, callback=booth.interrupt_event)
+GPIO.add_event_detect(29, GPIO.FALLING, callback=interrupt_event)
 GPIO.add_event_detect(33, GPIO.FALLING, callback=booth.reset_paper_count)
 booth.images[6].pack()
 booth.camera.start_preview()
