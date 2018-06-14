@@ -9,15 +9,16 @@ from Tkinter import *
 import sys
 from PIL import Image, ImageTk
 
-class Booth
+class Booth(object):
     def __init__(self):
+        print "init"
         self.pins = [40, 38, 36, 32, 22, 18, 16, 11, 12, 07 ]
         self.images = []
-        camera_setup()
-        pin_setup()
-        printer_setup()
-        create_images()
-        led_low()
+        self.create_images()
+        self.camera_setup()
+        self.pin_setup()
+        self.printer_setup()
+        self.led_low()
 
     def camera_setup(self):
         self.camera = picamera.PiCamera(resolution = (900, 1100), framerate= 30 )
@@ -33,10 +34,10 @@ class Booth
 
     def printer_setup(self):
         self.conn = cups.Connection()
-        self.printers = conn.getPrinters()
-        self.printer_name = printers.keys()[0]
-        self.paper_count=18
-        self.paper_left=paper_count
+        self.printers = self.conn.getPrinters()
+        self.printer_name = self.printers.keys()[0]
+        self.paper_count = 18
+        self.paper_left = self.paper_count
 
     def pin_setup(self):
         GPIO.setmode(GPIO.BOARD)
@@ -46,10 +47,11 @@ class Booth
         GPIO.setup(31, GPIO.OUT)
         GPIO.output(31,GPIO.LOW)
         for pin in self.pins:
+            print pin
             GPIO.setup(pin, GPIO.OUT)
         return
 
-    def create_images
+    def create_images(self):
         for number in range(1,9):
             print number
             image = Image.open('countdown/' + str(number) + '.png')
@@ -68,65 +70,69 @@ class Booth
             GPIO.output(pin,GPIO.LOW)
         return
 
-    def count_down(self):
+    def count_down(self, photo_count):
+            
         i=1
         image_number = 4
         for pin in reversed(self.pins):
-            print i
             if i % 2 == 0:
                 self.images[image_number].pack()
                 if( image_number == 4 ):
+                    if photo_count == 1 :
+                        self.images[6].pack_forget()
                     self.images[0].pack_forget()
-            else:
-    	        self.images[image_number+1].pack_forget()
-            image_number -= 1
+                else:
+                    self.images[image_number+1].pack_forget()   	        
+                image_number -= 1
             time.sleep(0.6)
             GPIO.output(pin,GPIO.LOW)
-        	i += 1
+            i += 1
         return
 
-    def display_images():
+    def display_images(self):
         for image_number in range(1, 4):
             image = Image.open('photobooth_images/image'+ str(image_number) + '.jpg' )
+            image = image.resize((800,480), Image.ANTIALIAS)
             photo = ImageTk.PhotoImage(image)
             new_label = Label(image=photo)
             new_label.image = photo # keep a reference!
-            new_label.pack()
-            try:
+            new_label.pack(fill=BOTH, expand=1)
+            if image_number == 1:
+                self.images[5].pack_forget()
+            else:
                 active_label.pack_forget()
             active_label = new_label
             sleep(10)
         active_label.pack_forget()
 
-    def start_process():
+    def start_process(self):
         self.camera.stop_preview()
         self.camera.rotation = 0
         self.camera.resolution = (900, 1100)
         sleep(2)
-        self.camera.shutter_speed = camera.exposure_speed
+        self.camera.shutter_speed = self.camera.exposure_speed
         self.camera.exposure_mode = 'off'
-        g = camera.awb_gains
+        g = self.camera.awb_gains
         self.camera.awb_mode = 'off'
         self.camera.awb_gains = g
-        self.images[6].pack_forget()
 
-    def stop_process():
+    def stop_process(self):
         self.images[6].pack()
         self.camera.rotation = 90
         self.camera.start_preview()
         self.camera.exposure_mode = 'auto'
         self.camera.awb_mode = 'auto'
 
-    def Reset_paper_count(pin):
+    def reset_paper_count(self):
         print "reset"
         if self.paper_left != self.paper_count:
             print "in"
-            stop_process()
+            self.stop_process()
             self.images[7].pack_forget()
             GPIO.output(31,GPIO.LOW)
             self.taking_photo = False
 
-    def printer_busy():
+    def printer_busy(self):
         printerqueuelength = len(self.conn.getJobs())
         if printerqueuelength >= 1:
             self.images[7].pack()
@@ -136,53 +142,55 @@ class Booth
             self.images[7].pack_forget()
             return False
 
-    def Interrupt_event(pin):
-        print "interupt"
-
-        input_state = GPIO.input(37)
-        input_state2 = GPIO.input(29) == False
-        if ( input_state or input_state2 ) and self.paper_left > 0:
-            if taking_photo:
-                return
-            else:
-                self.taking_photo = True
-        if printer_busy():
-            self.taking_photo = False
-                return
-            led_high()
-            start_process()
-            for image_number in range(1,4):
-                led_high()
-                sleep(1)
-                count_down()
-                self.camera.capture('photobooth_images/image'+ str(image_number) + '.jpg' )
-            self.images[0].pack_forget()
-            self.images[5].pack()
-            subprocess.call("sudo ./assemble_and_print", shell=True)
-            self.images[5].pack_forget()
-            display_images()
-            self.paper_left -= 1
-            if self.paper_left == 0:
-                self.images[7].pack()
+def interrupt_event(pin):
+    global booth
+    input_state = GPIO.input(37)
+    input_state2 = GPIO.input(29) == False
+    if ( input_state or input_state2 ) and booth.paper_left > 0:
+        if booth.taking_photo:
+            return
         else:
-            stop_process()
-            start = time.time()
-        self.taking_photo = False
+            booth.taking_photo = True
+    if booth.printer_busy():
+        booth.taking_photo = False
+        return
+    else:
+        booth.led_high()
+        booth.start_process()
+        for image_number in range(1,4):
+            booth.led_high()
+            sleep(1)
+            booth.count_down(1)
+            booth.camera.capture('photobooth_images/image'+ str(image_number) + '.jpg' )
 
-booth = Booth.new()
-GPIO.add_event_detect(37, GPIO.BOTH, callback=booth.Interrupt_event)
-GPIO.add_event_detect(29, GPIO.FALLING, callback=booth.Interrupt_event)
-GPIO.add_event_detect(33, GPIO.FALLING, callback=booth.Reset_paper_count)
 
-self.images[6].pack()
-camera.start_preview()
+        booth.images[0].pack_forget()
+        booth.images[5].pack()
+        subprocess.call("sudo ./assemble_and_print", shell=True)
+        booth.display_images()
+        booth.paper_left -= 1
+        if booth.paper_left == 0:
+            booth.images[7].pack()
+        else:
+            booth.stop_process()
+    booth.taking_photo = False
 
 master = Tk()
 master.wm_attributes('-fullscreen', 'true')
+
+global booth
+booth = Booth()
+
 master.bind("<Return>", lambda e: (
   GPIO.cleanup(),
-  camera.stop_preview(),
-  camera.close(),
+  booth.camera.stop_preview(),
+  booth.camera.close(),
   master.destroy()))
+
+GPIO.add_event_detect(37, GPIO.FALLING, callback=interrupt_event, bouncetime=1000 )
+#GPIO.add_event_detect(29, GPIO.FALLING, callback=booth.interrupt_event)
+#GPIO.add_event_detect(33, GPIO.FALLING, callback=booth.reset_paper_count)
+booth.images[6].pack()
+booth.camera.start_preview()
 
 master.mainloop()
