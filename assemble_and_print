@@ -7,8 +7,4 @@ montage photobooth_images/temp_montage3.jpg layouts/line.png photobooth_images/t
 #lp -d Canon_CP1000 photobooth_images/temp_montage4.jpg
 suffix=$(date +%H%M%S)
 cp photobooth_images/temp_montage4.jpg archive/PB_${suffix}.jpg
-
-#mogrify -rotate 90 photobooth_images/image1.jpg
-#mogrify -rotate 90 photobooth_images/image2.jpg
-#mogrify -rotate 90 photobooth_images/image3.jpg
 #rm /home/pi/Desktop/photobooth_images/*.jpg

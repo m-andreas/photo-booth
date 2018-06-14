@@ -91,7 +91,7 @@ class Booth(object):
 
     def display_images(self):
         for image_number in range(1, 4):
-            image = Image.open('photobooth_images/image'+ str(image_number) + '.jpg' )
+            image = Image.open('photobooth_images_turned/image'+ str(image_number) + '.jpg' )
             image = image.resize((800,480), Image.ANTIALIAS)
             photo = ImageTk.PhotoImage(image)
             new_label = Label(image=photo)
@@ -144,6 +144,9 @@ class Booth(object):
 
 def interrupt_event(pin):
     global booth
+    print "interupt"
+    print GPIO.input(37)
+    print GPIO.input(29)
     input_state = GPIO.input(37)
     input_state2 = GPIO.input(29) == False
     if ( input_state or input_state2 ) and booth.paper_left > 0:
@@ -151,29 +154,29 @@ def interrupt_event(pin):
             return
         else:
             booth.taking_photo = True
-    if booth.printer_busy():
-        booth.taking_photo = False
-        return
-    else:
-        booth.led_high()
-        booth.start_process()
-        for image_number in range(1,4):
-            booth.led_high()
-            sleep(1)
-            booth.count_down(1)
-            booth.camera.capture('photobooth_images/image'+ str(image_number) + '.jpg' )
-
-
-        booth.images[0].pack_forget()
-        booth.images[5].pack()
-        subprocess.call("sudo ./assemble_and_print", shell=True)
-        booth.display_images()
-        booth.paper_left -= 1
-        if booth.paper_left == 0:
-            booth.images[7].pack()
+        if booth.printer_busy():
+            booth.taking_photo = False
+            return
         else:
-            booth.stop_process()
-    booth.taking_photo = False
+            booth.led_high()
+            booth.start_process()
+            for image_number in range(1,4):
+                booth.led_high()
+                sleep(1)
+                booth.count_down(1)
+                booth.camera.capture('photobooth_images/image'+ str(image_number) + '.jpg' )
+
+            booth.images[0].pack_forget()
+            booth.images[5].pack()
+            subprocess.call("sudo ./turn_images", shell=True)
+            subprocess.call("sudo ./assemble_and_print&", shell=True)
+            booth.display_images()
+            booth.paper_left -= 1
+            if booth.paper_left == 0:
+                booth.images[7].pack()
+            else:
+                booth.stop_process()
+        booth.taking_photo = False
 
 master = Tk()
 master.wm_attributes('-fullscreen', 'true')
@@ -187,9 +190,9 @@ master.bind("<Return>", lambda e: (
   booth.camera.close(),
   master.destroy()))
 
-GPIO.add_event_detect(37, GPIO.FALLING, callback=interrupt_event, bouncetime=1000 )
-#GPIO.add_event_detect(29, GPIO.FALLING, callback=booth.interrupt_event)
-#GPIO.add_event_detect(33, GPIO.FALLING, callback=booth.reset_paper_count)
+GPIO.add_event_detect(37, GPIO.FALLING, callback=interrupt_event)
+GPIO.add_event_detect(29, GPIO.FALLING, callback=booth.interrupt_event)
+GPIO.add_event_detect(33, GPIO.FALLING, callback=booth.reset_paper_count)
 booth.images[6].pack()
 booth.camera.start_preview()
 
