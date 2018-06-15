@@ -1,3 +1,5 @@
+#!/bin/bash
+
 cp photobooth_images/image1.jpg photobooth_images_turned/image1.jpg
 cp photobooth_images/image2.jpg photobooth_images_turned/image2.jpg
 cp photobooth_images/image3.jpg photobooth_images_turned/image3.jpg

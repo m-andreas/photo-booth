@@ -1,0 +1,3 @@
+#!/bin/bash
+lp -d Canon_CP1000 photobooth_images/temp_montage4.jpg
+

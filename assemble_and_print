@@ -11,7 +11,7 @@ montage photobooth_images/temp_montage3.jpg layouts/line.jpg photobooth_images/t
 #convert photobooth_images/temp_montage5.jpg  -gravity North -chop 0x10 photobooth_images/temp_montage6.jpg
 #convert temp_montage6.jpg -shave 5x0  temp_montage7.jpg
 
-#lp -d Canon_CP1000 photobooth_images/temp_montage4.jpg
+lp -d Canon_CP1000 photobooth_images/temp_montage4.jpg
 suffix=$(date +%H%M%S)
 cp photobooth_images/temp_montage4.jpg archive/PB_${suffix}.jpg
 
@@ -19,8 +19,8 @@ cp photobooth_images/temp_montage4.jpg archive/PB_${suffix}.jpg
 #mogrify -rotate 90 photobooth_images/image2.jpg
 #mogrify -rotate 90 photobooth_images/image3.jpg
 
-cp photobooth_images/image1.jpg archive/PB_${suffix}_1.jpg
-cp photobooth_images/image2.jpg archive/PB_${suffix}_2.jpg
-cp photobooth_images/image3.jpg archive/PB_${suffix}_3.jpg
+cp photobooth_images_turned/image1.jpg archive/PB_${suffix}_1.jpg
+cp photobooth_images_turned/image2.jpg archive/PB_${suffix}_2.jpg
+cp photobooth_images_turned/image3.jpg archive/PB_${suffix}_3.jpg
 
 #rm /home/pi/Desktop/photobooth_images/*.jpg

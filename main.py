@@ -7,6 +7,7 @@ from subprocess import Popen
 import time
 from Tkinter import *
 import sys
+import yaml
 from PIL import Image, ImageTk
 
 class Booth(object):
@@ -21,12 +22,16 @@ class Booth(object):
         self.led_low()
 
     def camera_setup(self):
+        stream = open("/home/pi/Desktop/settings.yml")
+        settings = yaml.load(stream)
+        print settings
+        print settings['saturation']
         self.camera = picamera.PiCamera(resolution = (900, 1100), framerate= 30 )
         self.camera.rotation = 90
-        self.camera.brightness = 55
-        self.camera.shutter_speed = 7000
-        self.camera.iso = 800
-        self.camera.saturation = 30
+        self.camera.brightness = settings['brightness']
+        self.camera.shutter_speed = settings['shutter_speed']
+        self.camera.iso = settings['iso']
+        self.camera.saturation = settings['saturation']
         self.taking_photo=False
         self.camera.preview_fullscreen=False
         self.camera.preview_window=(160, 0, 480, 525)
@@ -90,17 +95,18 @@ class Booth(object):
         return
 
     def display_images(self):
+        self.images[6].pack()
         for image_number in range(1, 4):
             image = Image.open('photobooth_images_turned/image'+ str(image_number) + '.jpg' )
-            image = image.resize((800,480), Image.ANTIALIAS)
+            image = image.resize((587,480), Image.ANTIALIAS)
             photo = ImageTk.PhotoImage(image)
             new_label = Label(image=photo)
             new_label.image = photo # keep a reference!
-            new_label.pack(fill=BOTH, expand=1)
+            new_label.place(relx=0.5, rely=0.5, anchor=CENTER)
             if image_number == 1:
                 self.images[5].pack_forget()
             else:
-                active_label.pack_forget()
+                active_label.place_forget()
             active_label = new_label
             sleep(10)
         active_label.pack_forget()
@@ -142,6 +148,10 @@ class Booth(object):
             self.images[7].pack_forget()
             return False
 
+def reprint(pin):
+    print("reprint")
+    subprocess.call("sudo ./reprint", shell=True)
+
 def interrupt_event(pin):
     global booth
     print "interupt"
@@ -149,7 +159,7 @@ def interrupt_event(pin):
     print GPIO.input(29)
     input_state = GPIO.input(37)
     input_state2 = GPIO.input(29) == False
-    if ( input_state or input_state2 ) and booth.paper_left > 0:
+    if ( input_state or input_state2 ):
         if booth.taking_photo:
             return
         else:
@@ -192,7 +202,7 @@ master.bind("<Return>", lambda e: (
 
 GPIO.add_event_detect(37, GPIO.FALLING, callback=interrupt_event)
 GPIO.add_event_detect(29, GPIO.FALLING, callback=interrupt_event)
-GPIO.add_event_detect(33, GPIO.FALLING, callback=booth.reset_paper_count)
+GPIO.add_event_detect(33, GPIO.FALLING, callback=reprint)
 booth.images[6].pack()
 booth.camera.start_preview()
 
